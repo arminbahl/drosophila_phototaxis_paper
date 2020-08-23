@@ -9,8 +9,8 @@ matplotlib.use("qt5agg")
 import pylab as pl
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
-#df = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="event_data")
-df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="event_data")
+df = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="event_data")
+#df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="event_data")
 
 print(df)
 # Exclude fish
@@ -35,15 +35,15 @@ df = df.query("larva_ID != '2018_02_15_fish012_setup0' and "
               "larva_ID != '2018_11_27_fish013_setup1' and "
               "larva_ID != '2018_11_27_fish016_setup1'")
 
-#df.to_hdf(root_path / "all_events.h5", key="all_events", complevel=9)
-df.to_hdf(root_path / "all_events_model_profile1.h5", key="all_events", complevel=9)
+df.to_hdf(root_path / "all_events.h5", key="all_events", complevel=9)
+#df.to_hdf(root_path / "all_events_model_profile1.h5", key="all_events", complevel=9)
 
 
 #sdgfsg
 #print(df.index.get_level_values(0).unique())
 #sdf
-#df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
-df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
+df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
+#df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
 
 
 #df[]
@@ -142,7 +142,7 @@ k2 = df_selected2[["luminance_at_t_minus_20",
 #print(k1.mean(axis=0))
 #sdf
 print(len(k1), len(k2))
-sdf
+#sdf
 all_results = dict({"bins": [-20, -15, -10, -5, -2, -1, 0, 1, 2, 5, 10, 15, 20],
                     "means_experiment": k1.mean(axis=0),
                     "sems_experiment": k1.sem(axis=0),
@@ -153,8 +153,9 @@ all_results = dict({"bins": [-20, -15, -10, -5, -2, -1, 0, 1, 2, 5, 10, 15, 20],
 df_results = pd.DataFrame.from_dict(all_results)
 df_results.set_index(["bins"], inplace=True)
 df_results.sort_index(inplace=True)
-df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance", complevel=9)
-#df_results.to_hdf(root_path / "all_events.h5", key="event_triggered_luminance", complevel=9)
+
+#df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance", complevel=9)
+df_results.to_hdf(root_path / "all_events.h5", key="event_triggered_luminance", complevel=9)
 
 #pl.errorbar([-20, -15, -10, -5, -2, -1, 0, 1, 2, 5, 10, 15, 20], k1.mean(axis=0), k1.sem(axis=0), color='C0')
 

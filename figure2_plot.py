@@ -8,16 +8,16 @@ from sklearn.linear_model import LinearRegression
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
 
-#df = pd.read_hdf(root_path / "all_events.h5", key="results_figure2")
-#df_histogram_results = pd.read_hdf(root_path / "all_events.h5", key="results_figure2_histograms")
-#df_event_triggered_luminance = pd.read_hdf(root_path / "all_events.h5", key="event_triggered_luminance")
+df = pd.read_hdf(root_path / "all_events.h5", key="results_figure2")
+df_histogram_results = pd.read_hdf(root_path / "all_events.h5", key="results_figure2_histograms")
+df_event_triggered_luminance = pd.read_hdf(root_path / "all_events.h5", key="event_triggered_luminance")
 
-df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2")
-df_histogram_results = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2_histograms")
-df_event_triggered_luminance = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance")
+# df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2")
+# df_histogram_results = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2_histograms")
+# df_event_triggered_luminance = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance")
 
 #df.to_excel(root_path / "all_events_figure2.xlsx", sheet_name="all_events_model.h5")
-df.groupby("experiment_name").mean().to_excel(root_path / "all_events_model_figure2_experiment_mean.xlsx", sheet_name="all_data")
+#df.groupby("experiment_name").mean().to_excel(root_path / "all_events_model_figure2_experiment_mean.xlsx", sheet_name="all_data")
 
 
 fig = myfig.Figure(title="Figure 2")
@@ -201,7 +201,7 @@ for experiment_name, x_pos, y_pos, color in [["virtual_valley_stimulus_drosolarv
     p0 = myfig.Plot(fig, num='e', xpos=x_pos, ypos=y_pos, plot_height=1.25, plot_width=0.375*3,
                         lw=1, pc='white', errorbar_area=False,
                         xl="", xmin=-0.5, xmax=2.5, xticks=[0, 1, 2], xticklabels=["Since previous turn event",
-                                                                                   "During turn event"], xticklabels_rotation=45,
+                                                                                   "During turn event", "kk"], xticklabels_rotation=45,
                         yl="Absolute luminance change (Lux)", ymin=-5, ymax=65, yticks=[0, 30, 60])
 
 
@@ -241,8 +241,8 @@ for experiment_name, x_pos, y_pos, color in [["virtual_valley_stimulus_drosolarv
 
 
 # The individual event analsis
-df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
-#df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
+#df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
+df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
 
 for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
 
@@ -275,15 +275,19 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_st
     for bin in bins:
         df_ = df_selected.query("luminance_at_current_turn_event < (@bin + 7.5) and luminance_at_current_turn_event > (@bin - 7.5)")
         vals.append(df_["angle_change_at_current_turn_event"].abs().median())
-    myfig.Scatter(p0, x=bins, y=vals, lw=0, pt='.', ps=12, pc=color, zorder=5)
+    #myfig.Scatter(p0, x=bins, y=vals, lw=0, pt='.', ps=12, pc=color, zorder=5)
 
     X = np.array(bins).reshape(-1, 1)
     Y = np.array(vals).reshape(-1, 1)
+    #print(X.shape)
+    X = np.array(df_selected.query("angle_change_at_current_turn_event < 41 and angle_change_at_current_turn_event > -41 and luminance_at_current_turn_event < 160")["luminance_at_current_turn_event"]).reshape(-1, 1)
+    Y = np.array(df_selected.query("angle_change_at_current_turn_event < 41 and angle_change_at_current_turn_event > -41 and luminance_at_current_turn_event < 160")["angle_change_at_current_turn_event"].abs()).reshape(-1, 1)
+    print(X.shape, Y.shape)
 
     reg = linear_regressor.fit(X, Y)  # perform linear regression
     Y_pred = linear_regressor.predict(X)  # make predictions
 
-    myfig.Line(p0, x=bins, y=Y_pred, lc='black', lw=0.5, zorder=6, label=f'R2 = {reg.score(X, Y):.2f}\ny = {reg.coef_[0][0]:.2f}*x + {reg.intercept_[0]:.1f}')
+    myfig.Line(p0, x=X, y=Y_pred, lc='black', lw=0.5, zorder=6, label=f'R2 = {reg.score(X, Y):.3f}\ny = {reg.coef_[0][0]:.3f}*x + {reg.intercept_[0]:.2f}')
 
     # The luminance change
     p0 = myfig.Plot(fig, num='b', xpos=14, ypos=ypos, plot_height=1.25, plot_width=2,
@@ -303,14 +307,19 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_st
     for bin in bins:
         df_ = df_selected.query("luminance_change_since_previous_turn_event < (@bin + 10) and luminance_change_since_previous_turn_event > (@bin - 10)")
         vals.append(df_["angle_change_at_current_turn_event"].abs().median())
-    myfig.Scatter(p0, x=bins, y=vals, lw=0, pt='.', ps=12, pc=color, zorder=5)
+    #myfig.Scatter(p0, x=bins, y=vals, lw=0, pt='.', ps=12, pc=color, zorder=5)
 
     X = np.array(bins).reshape(-1, 1)
     Y = np.array(vals).reshape(-1, 1)
 
+    X = np.array(df_selected.query("luminance_change_since_previous_turn_event > -105 and luminance_change_since_previous_turn_event < 105 and angle_change_at_current_turn_event < 41 and angle_change_at_current_turn_event > -41")["luminance_change_since_previous_turn_event"]).reshape(-1, 1)
+    Y = np.array(df_selected.query("luminance_change_since_previous_turn_event > -105 and luminance_change_since_previous_turn_event < 105 and angle_change_at_current_turn_event < 41 and angle_change_at_current_turn_event > -41")["angle_change_at_current_turn_event"].abs()).reshape(-1, 1)
+    print(X.shape, Y.shape)
+
+
     reg = linear_regressor.fit(X, Y)  # perform linear regression
     Y_pred = linear_regressor.predict(X)  # make predictions
-    myfig.Line(p0, x=bins, y=Y_pred, lc='black', lw=0.5, zorder=6, label=f'R2 = {reg.score(X, Y):.2f}\ny = {reg.coef_[0][0]:.2f}*x + {reg.intercept_[0]:.1f}')
+    myfig.Line(p0, x=X, y=Y_pred, lc='black', lw=0.5, zorder=6, label=f'R2 = {reg.score(X, Y):.3f}\ny = {reg.coef_[0][0]:.3f}*x + {reg.intercept_[0]:.2f}')
 
 
 
