@@ -5,17 +5,27 @@ import my_figure as myfig
 from scipy.stats import ttest_ind, ttest_1samp
 import numpy as np
 
+x = np.arange(0, 6.05, 0.1)
+
+c1 = (1 - pow((1 - np.abs(x)/6), 0.5)) * 255
+c2 = np.ones_like(np.abs(x)) * 128
+c3 = 255*(np.abs(x)-3)**2/9
+
+#def projector_transformation_function(pixel_brightness):
+#    return 2900 * (pixel_brightness/255) ** 2.2 + 41
+
+
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
 #df1 = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="results_figure1")
-#df1 = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1")
-df1 = pd.read_hdf(root_path / "all_data_model_profile2.h5", key="results_figure1")
+df1 = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1")
+#df1 = pd.read_hdf(root_path / "all_data_model_profile2.h5", key="results_figure1")
 
 #df1.to_excel(root_path / "all_data_figure1.xlsx", sheet_name="results_figure1")
 df1.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_figure1_experiment_mean.xlsx", sheet_name="results_figure1")
 
-df2 = pd.read_hdf(root_path / "all_data_spatial_phototaxis.h5", key="results_figure1")
-df2.to_excel(root_path / "all_data__spatial_phototaxis_figure1.xlsx", sheet_name="results_figure1")
-df2.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_spatial_phototaxis_figure1_experiment_mean.xlsx", sheet_name="results_figure1")
+#df2 = pd.read_hdf(root_path / "all_data_spatial_phototaxis.h5", key="results_figure1")
+#df2.to_excel(root_path / "all_data__spatial_phototaxis_figure1.xlsx", sheet_name="results_figure1")
+#df2.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_spatial_phototaxis_figure1_experiment_mean.xlsx", sheet_name="results_figure1")
 
 # We define the phototaxis index as the change in time spent in the dark ring relative to control conditions
 
@@ -23,6 +33,7 @@ fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'virtua
 #fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'temporal_phototaxis_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
 
 fraction_of_time_in_dark_ring_control = df1.query("experiment_name == 'virtual_valley_stimulus_control_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
+
 #
 # ds = []
 # for i in range(1000):
@@ -33,13 +44,13 @@ fraction_of_time_in_dark_ring_control = df1.query("experiment_name == 'virtual_v
 # phototaxis_index_mean = np.mean(ds)
 # print(phototaxis_index_mean)
 
-for experiment_name in ["virtual_valley_stimulus_drosolarva", "temporal_phototaxis_drosolarva"]:
+for experiment_name in ["virtual_valley_stimulus_drosolarva"]:
 
     if experiment_name == "virtual_valley_stimulus_drosolarva":
         color = 'C0'
         df = df1
 
-    elif experiment_name == "temporal_phototaxis_drosolarva":
+    elif experiment_name == "virtual_valley_stimulus_control_drosolarva":
         color = "C1"
         df = df1
     else:
@@ -47,6 +58,20 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "temporal_phototax
         df = df2
 
     fig = myfig.Figure(title=f"Figure 1 - {experiment_name}")
+
+    # Show the luminance profile
+    p0 = myfig.Plot(fig, num='d', xpos=12, ypos=22, plot_height=1.25, plot_width=2.0,
+                            lw=1, pc='white', errorbar_area=False,
+                            xl="Radial distance from center (cm)", xmin=-0.1, xmax=6.1, xticks=[0, 2, 4, 6],
+                            yl="Brightness", ymin=-1, ymax=256, yticks=[0, 128, 255])
+
+    if experiment_name == "virtual_valley_stimulus_drosolarva":
+        myfig.Line(p0, x=x, y=c3, lc=color, lw=0.75)
+        myfig.Line(p0, x=x, y=c2, lc='gray', lw=0.75)
+
+    if experiment_name == "temporal_phototaxis_drosolarva":
+        myfig.Line(p0, x=x, y=c1, lc=color, lw=0.75)
+        myfig.Line(p0, x=x, y=c2, lc='gray', lw=0.75)
 
     for y_pos, time_bin in enumerate(["t15_to_t60", "t15_to_t25", "t25_to_t35", "t35_to_t45", "t45_to_t55"]):
         p0 = myfig.Plot(fig, num='a' if y_pos == 0 else '', xpos=1.5, ypos=22 - y_pos*3, plot_height=1.25, plot_width=2.0,
@@ -176,4 +201,4 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "temporal_phototax
 
 
 
-    fig.savepdf(root_path / f"figure1_{experiment_name}", open_pdf=True)
+    fig.savepdf(root_path / f"figure1_{experiment_name}_model", open_pdf=True)

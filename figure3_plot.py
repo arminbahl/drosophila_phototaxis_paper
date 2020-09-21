@@ -85,30 +85,31 @@ for rule_i in range(7):
                           ps=65, vmin=-40, vmax=40)
 
 fig.savepdf(root_path / f"figure3_gridsearch", open_pdf=True)
+sdfsfsf
 
-sdf
-print(df.loc[0.5, 0.5])
-
-asd
-pl.plot(df["phototaxis_index_mean"].values)
-#m = [df.loc[]]
-
-pl.show()
-
-print(df)
-sdf
+# sdf
+# print(df.loc[0.5, 0.5])
+#
+# asd
+# pl.plot(df["phototaxis_index_mean"].values)
+# #m = [df.loc[]]
+#
+# pl.show()
+#
+# print(df)
+# sdf
 files = ["rule1_gridsearch", "rule2_gridsearch", "rule3_gridsearch", "rule4_gridsearch", "rule123_gridsearch", "rule1234_gridsearch"]
 root_path = Path("/Users/arminbahl/Google Drive/Maxwell paper 2019/JEB_submission/response_to_reviews_1/Revised figure 3 data (1)")
 
 
-df1 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet2.h5", key="data")
-df2 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet3.h5", key="data")
-df3 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet4.h5", key="data")
+# df1 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet2.h5", key="data")
+# df2 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet3.h5", key="data")
+# df3 = pd.read_hdf(root_path / f"rule123_gridsearch_sheet4.h5", key="data")
 
-for i in range(15):
-    pl.plot(df1.loc[:,i], df2.loc[:,i], alpha=0.5, color='C0')
-pl.show()
-sdf
+# for i in range(15):
+#     pl.plot(df1.loc[:,i], df2.loc[:,i], alpha=0.5, color='C0')
+# pl.show()
+# sdf
 
 
 fig = myfig.Figure(title="Figure 3")

@@ -6,14 +6,16 @@ import numpy as np
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
 
+luminance_profile = 0
+
 @jit(nopython=True)
 def luminance_equation_0(x, y):
 
     r = np.sqrt(x**2 + y**2)
 
     if r > 5.5:
-        return 410*((5.5 - 3) ** 2 / 9 - (r-5.5))
-    return 410*((r - 3) ** 2 / 9) ## 1==410 as measured with IPhone
+        return 255*((5.5 - 3) ** 2 / 9 - (r-5.5))
+    return 255*((r - 3) ** 2 / 9) ## 1==410 as measured with IPhone
 
 @jit(nopython=True)
 def luminance_equation_1(x, y):
@@ -21,8 +23,10 @@ def luminance_equation_1(x, y):
     r = np.sqrt(x**2 + y**2)
 
     if r > 5.5:
-        return 410*((5.5 - 3) ** 2 / 9 - (r-5.5))
-    return (1 - pow((1 - r / 6), 0.5)) * 410
+        return 255*((5.5 - 3) ** 2 / 9 - (r-5.5))
+    return (1 - pow((1 - r / 6), 0.5)) * 255
+
+dark_threshold = 29
 
 # l = [luminance_equation_1(x, 0) for x in np.arange(0, 6, 0.1)]
 # import pylab as pl
@@ -57,7 +61,7 @@ def temporal_photo_taxis_model(experimental_condition, luminance_profile, ts, xs
         if experimental_condition == True:
 
             if rule1 == True:
-                if current_luminance < 410 * 0.11:  # Dark
+                if current_luminance < dark_threshold:  # Dark
                     abs_angle_turn = abs_angle_turn * 0.7
                 else:  # Bright
                     abs_angle_turn = abs_angle_turn * 1.3
@@ -69,7 +73,7 @@ def temporal_photo_taxis_model(experimental_condition, luminance_profile, ts, xs
                     abs_angle_turn = abs_angle_turn * 1.3
 
             if rule3 == True:
-                if current_luminance < 410 * 0.11:  # Dark
+                if current_luminance < dark_threshold:  # Dark
                     p_turn = p_turn * 0.7
                 else:  # Bright
                     p_turn = p_turn * 1.3
@@ -205,7 +209,7 @@ for rule1, rule2, rule3, rule4 in [[False, False, False, False],
 
                 orientations[0] = np.random.random()*360
 
-                event_counter = temporal_photo_taxis_model(True, 0, ts, xs, ys, luminances, orientations, event_indices, rule1, rule2, rule3, rule4, turn_angle_multiplier, run_length_multiplier)
+                event_counter = temporal_photo_taxis_model(True, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, rule1, rule2, rule3, rule4, turn_angle_multiplier, run_length_multiplier)
 
                 # make a summary list for easier computation of the phototaxis index
                 r = np.sqrt(xs ** 2 + ys ** 2)
@@ -224,7 +228,7 @@ for rule1, rule2, rule3, rule4 in [[False, False, False, False],
                     if np.sqrt(xs[0]**2 + ys[0]**2) < 6:
                         break
 
-                event_counter = temporal_photo_taxis_model(False, 0, ts, xs, ys, luminances, orientations, event_indices, rule1, rule2, rule3, rule4, turn_angle_multiplier, run_length_multiplier)
+                event_counter = temporal_photo_taxis_model(False, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, rule1, rule2, rule3, rule4, turn_angle_multiplier, run_length_multiplier)
 
                 # make a summary list for easier computation of the phototaxis index
                 r = np.sqrt(xs ** 2 + ys ** 2)
@@ -259,7 +263,7 @@ df = pd.DataFrame.from_dict(phototaxis_index_grid_search)
 df.set_index(["rule1", "rule2", "rule3", "rule4", "run_length_multiplier", "turn_angle_multiplier"], inplace=True)
 df.sort_index(inplace=True)
 
-df.to_hdf(root_path / "all_data_model_profile1.h5", key="phototaxis_index_grid_search", complevel=4)
+df.to_hdf(root_path / f"all_data_model_profile{luminance_profile}.h5", key="phototaxis_index_grid_search", complevel=4)
 
 #for experiment_name in ["temporal_phototaxis_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
 for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
@@ -275,9 +279,9 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_st
 
         if experiment_name == "virtual_valley_stimulus_drosolarva":
 #        if experiment_name == "temporal_phototaxis_drosolarva":
-            event_counter = temporal_photo_taxis_model(True, 0, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)
+            event_counter = temporal_photo_taxis_model(True, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)
         if experiment_name == "virtual_valley_stimulus_control_drosolarva":
-            event_counter = temporal_photo_taxis_model(False, 0, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)
+            event_counter = temporal_photo_taxis_model(False, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)
 
         # make a summary list for easier computation of the phototaxis index
         all_data["larva_ID"].extend([larva_i] * len(ts))
@@ -321,7 +325,7 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_st
             all_results["luminance_change_over_last_2s_before_current_turn_event"].append(luminances[current_event_i] - luminances[current_event_i - int(2/dt)])
             all_results["luminance_change_over_last_5s_before_current_turn_event"].append(luminances[current_event_i] - luminances[current_event_i - int(5/dt)])
             all_results["luminance_change_over_last_10s_before_current_turn_event"].append(luminances[current_event_i] - luminances[current_event_i - int(10/dt)])
-            all_results["luminance_change_during_current_turn_event"].append(luminances[current_event_i + int(1/dt)] - luminances[current_event_i - int(1/dt)])
+            all_results["luminance_change_during_current_turn_event"].append(luminances[current_event_i + int(0.5/dt)] - luminances[current_event_i - int(0.5/dt)])
             all_results["roi_movie_framenum_at_current_turn_event"].append(0)
             all_results["curvature_at_current_turn_event"].append(0)
 
@@ -347,11 +351,11 @@ df = pd.DataFrame.from_dict(all_data)
 df.set_index(["larva_ID", "experiment_name", "time"], inplace=True)
 df.sort_index(inplace=True)
 
-df.to_hdf(root_path / "all_data_model_profile1.h5", key="raw_data")
+df.to_hdf(root_path / f"all_data_model_profile{luminance_profile}.h5", key="raw_data")
 
 
 df_results = pd.DataFrame.from_dict(all_results)
 df_results.set_index(["experiment_name", "larva_ID"], inplace=True)
 df_results.sort_index(inplace=True)
 
-df_results.to_hdf(root_path / "all_data_model_profile1.h5", key="event_data")
+df_results.to_hdf(root_path / f"all_data_model_{luminance_profile}.h5", key="event_data")

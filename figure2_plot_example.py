@@ -10,7 +10,7 @@ from deepposekit.io import DataGenerator
 from matplotlib.colors import to_rgb
 import imageio
 from PIL import Image
-from my_general_helpers import butter_lowpass_filter
+#from my_general_helpers import butter_lowpass_filter
 
 def curvature(x1, y1, x2, y2, x3, y3):#, x4, y4, x5, y5):
     dx1 = x1 - x2
@@ -115,35 +115,60 @@ df_raw_data["curvature"] = curvature(df_raw_data["head_x"].values,
 df_raw_data_selected_larva = df_raw_data.query("experiment_name == 'virtual_valley_stimulus_drosolarva' and larva_ID == '2018_11_15_fish006_setup1'").reset_index(level=['experiment_name', 'larva_ID'], drop=True)
 df_event_data_selected_larva = df_event_data.query("experiment_name == 'virtual_valley_stimulus_drosolarva' and larva_ID == '2018_11_15_fish006_setup1'").reset_index(level=['experiment_name', 'larva_ID'], drop=True)
 
-# Make a movie
-# filename = Path(root_path / "2018_11_15_fish006_setup1.avi")
-# vid = imageio.get_reader(filename, 'ffmpeg')
-#
-# writer = imageio.get_writer(root_path / '2018_11_15_fish006_setup1_pose_manual.mp4', codec='libx264', fps=90, ffmpeg_params=["-b:v", "8M"])
-#
-# node_colors = ["C0", "C1", "C2"]
-#
-# for t, row in tqdm(df_raw_data_selected_larva.query("time > 930 and time < 1040").iterrows()):
-#
-#     img = vid.get_data(int(row["roi_movie_framenum"]))[:, :, 0]
-#     img = np.array(Image.fromarray(img).resize((96*4, 96*4)), dtype=np.float32)
-#     img = (255 * img / img.max()).astype(np.uint8)
-#
-#     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-#
-#     cv2.putText(img, f"{t-930:.1f} s", (20, 30), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255))
-#
-#     cv2.line(img, (int(row["head_x"]*4), int(row["head_y"]*4)), (int(row["center_x"]*4), int(row["center_y"]*4)), (0, 0, 255), 2, cv2.LINE_AA)
-#     cv2.line(img, (int(row["center_x"]*4), int(row["center_y"]*4)), (int(row["tail_x"]*4), int(row["tail_y"]*4)), (0, 255, 0), 2, cv2.LINE_AA)
-#
-#     cv2.circle(img, (int(row["head_x"]*4), int(row["head_y"]*4)), 4, tuple(np.array(to_rgb("C0")) * 255), -1, lineType=cv2.LINE_AA)
-#     cv2.circle(img, (int(row["center_x"]*4), int(row["center_y"]*4)), 4, tuple(np.array(to_rgb("C1")) * 255), -1, lineType=cv2.LINE_AA)
-#     cv2.circle(img, (int(row["tail_x"]*4), int(row["tail_y"]*4)), 4, tuple(np.array(to_rgb("C2")) * 255), -1, lineType=cv2.LINE_AA)
-#
-#     writer.append_data(img)
-#
-# writer.close()
+#Make a movie
+filename = Path(root_path / "2018_11_15_fish006_setup1.avi")
+vid = imageio.get_reader(filename, 'ffmpeg')
 
+writer = imageio.get_writer(root_path / '2018_11_15_fish006_setup1_pose_manual.mp4', codec='libx264', fps=90, ffmpeg_params=["-b:v", "8M"])
+
+node_colors = ["C0", "C1", "C2"]
+
+for t, row in tqdm(df_raw_data_selected_larva.query("time > 930 and time < 990").iterrows()):
+    print(t)
+    img = vid.get_data(int(row["roi_movie_framenum"]))[:, :, 0]
+    img = np.array(Image.fromarray(img).resize((96*4, 96*4)), dtype=np.float32)
+    img = (255 * img / img.max()).astype(np.uint8)
+
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+
+    head_x = int(row["head_x"] * 4)
+    head_y = int(row["head_y"] * 4)
+
+    centroid_x = int(row["center_x"] * 4)
+    centroid_y = int(row["center_y"] * 4)
+
+    tail_x = int(row["tail_x"] * 4)
+    tail_y = int(row["tail_y"] * 4)
+
+    # Move the centroid to the center of the image
+    dx = centroid_x - 96 * 2
+    dy = centroid_y - 96 * 2
+
+    img = np.roll(img, -dx, axis=1)
+    img = np.roll(img, -dy, axis=0)
+
+    head_x -= dx
+    head_y -= dy
+
+    tail_x -= dx
+    tail_y -= dy
+
+    centroid_x -= dx
+    centroid_y -= dy
+
+    cv2.putText(img, f"{t-930:.1f} s", (20, 30), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255))
+
+    cv2.line(img, (head_x, head_y), (centroid_x, centroid_y), (0, 0, 255), 2, cv2.LINE_AA)
+    cv2.line(img, (tail_x, tail_y), (centroid_x, centroid_y), (0, 0, 255), 2, cv2.LINE_AA)
+
+    cv2.circle(img, (head_x, head_y), 6, tuple(np.array(to_rgb("C0")) * 255), -1, lineType=cv2.LINE_AA)
+    cv2.circle(img, (centroid_x, centroid_y), 6, tuple(np.array(to_rgb("C1")) * 255), -1, lineType=cv2.LINE_AA)
+    cv2.circle(img, (tail_x, tail_y), 6, tuple(np.array(to_rgb("C0")) * 255), -1, lineType=cv2.LINE_AA)
+
+    writer.append_data(img)
+
+writer.close()
+dddd
 
 fig = myfig.Figure(title="Figure 2")
 

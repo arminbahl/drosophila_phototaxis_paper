@@ -58,20 +58,34 @@ def curvature(x1, y1, x2, y2, x3, y3):#, x4, y4, x5, y5):
     return np.degrees(np.arccos(dotProduct1/modOfVectors1))# + \
            #np.degrees(np.arccos(dotProduct2/modOfVectors2)) + \
            #np.degrees(np.arccos(dotProduct3/modOfVectors3))
-
+#
+# def projector_transformation_function(pixel_brightness):
+#     return 2900 * (pixel_brightness/255) ** 2.2 + 41
 
 def luminance_equation(x, y):
 
     r = np.sqrt(x**2 + y**2)
 
-    if r > 5.5:
-        return 410*((5.5 - 3) ** 2 / 9 - (r-5.5))
-    return 410*((r - 3) ** 2 / 9) ## 1==410 as measured with IPhone
+    if r > 5.5: # the wall looks dark, include that, because this is the true luminance profile
+        return 255*((5.5 - 3) ** 2 / 9 - (r-5.5))
+    return 255*((r - 3) ** 2 / 9) ## 1==410 as measured with IPhone
 
-print(luminance_equation(3.9, 0))
-print(luminance_equation(4, 0))
-print(luminance_equation(4.1, 0))
+#print(luminance_equation(0,0))
+print(luminance_equation(1,0))
+print(luminance_equation(2,0)) ## Dark ring area
+print(luminance_equation(3,0))
+print(luminance_equation(4,0))
+print(luminance_equation(5,0))
 
+# print(projector_transformation_function(luminance_equation(3.9, 0)))
+# print(projector_transformation_function(luminance_equation(4, 0)))
+# print(projector_transformation_function(luminance_equation(4.1, 0)))
+
+# k = [luminance_equation(x, 0) for x in np.arange(0, 6, 0.1)]
+# pl.plot(k)
+# pl.show()
+# sf
+# fgh
 #sdf
 # vals = [luminance_equation(x, 0) for x in np.arange(0, 6, 0.1)]
 # pl.plot(vals)
@@ -227,8 +241,9 @@ for experiment_name in experiment_names:
             #if np.abs(current_angle_change) > 150:
             #    continue
 
-            luminance_change_during_turn_event = luminance_equation(df_selected_larva.iloc[peak_i + 90]["x"], df_selected_larva.iloc[peak_i + 90]["y"]) - \
-                                                 luminance_equation(df_selected_larva.iloc[peak_i - 90]["x"], df_selected_larva.iloc[peak_i - 90]["y"])
+            # Arbitraryly define a few frames to get the variance during the turn event (plus minus 0.5 s)
+            luminance_change_during_turn_event = luminance_equation(df_selected_larva.iloc[peak_i + 45]["x"], df_selected_larva.iloc[peak_i + 45]["y"]) - \
+                                                 luminance_equation(df_selected_larva.iloc[peak_i - 45]["x"], df_selected_larva.iloc[peak_i - 45]["y"])
 
             # Ignore if too close in spatial distance to previous event
             if np.isnan(previous_x) or np.sqrt((current_x - previous_x)**2 +

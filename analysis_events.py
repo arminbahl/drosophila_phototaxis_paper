@@ -9,8 +9,8 @@ matplotlib.use("qt5agg")
 import pylab as pl
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
-df = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="event_data")
-#df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="event_data")
+#df = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="event_data")
+df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="event_data")
 
 print(df)
 # Exclude fish
@@ -35,15 +35,15 @@ df = df.query("larva_ID != '2018_02_15_fish012_setup0' and "
               "larva_ID != '2018_11_27_fish013_setup1' and "
               "larva_ID != '2018_11_27_fish016_setup1'")
 
-df.to_hdf(root_path / "all_events.h5", key="all_events", complevel=9)
-#df.to_hdf(root_path / "all_events_model_profile1.h5", key="all_events", complevel=9)
+#df.to_hdf(root_path / "all_events.h5", key="all_events", complevel=9)
+df.to_hdf(root_path / "all_events_model_profile1.h5", key="all_events", complevel=9)
 
 
 #sdgfsg
 #print(df.index.get_level_values(0).unique())
 #sdf
-df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
-#df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
+#df = pd.read_hdf(root_path / "all_events.h5", key="all_events")
+df = pd.read_hdf(root_path / "all_events_model_profile1.h5", key="all_events")
 
 
 #df[]
@@ -154,8 +154,8 @@ df_results = pd.DataFrame.from_dict(all_results)
 df_results.set_index(["bins"], inplace=True)
 df_results.sort_index(inplace=True)
 
-#df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance", complevel=9)
-df_results.to_hdf(root_path / "all_events.h5", key="event_triggered_luminance", complevel=9)
+#df_results.to_hdf(root_path / "all_events.h5", key="event_triggered_luminance", complevel=9)
+df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="event_triggered_luminance", complevel=9)
 
 #pl.errorbar([-20, -15, -10, -5, -2, -1, 0, 1, 2, 5, 10, 15, 20], k1.mean(axis=0), k1.sem(axis=0), color='C0')
 
@@ -246,8 +246,8 @@ for experiment_name in experiment_names:
         all_results["experiment_name"].append(experiment_name)
         all_results["larva_ID"].append(larva_ID)
 
-        all_results["angle_change_at_current_turn_event_if_bright_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event > 0.11*410 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
-        all_results["angle_change_at_current_turn_event_if_dark_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event <= 0.11*410 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
+        all_results["angle_change_at_current_turn_event_if_bright_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event > 29 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
+        all_results["angle_change_at_current_turn_event_if_dark_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event <= 29 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
 
         #all_results["angle_change_at_current_turn_event_if_bright_at_previous_turn_event"].append(df_selected_larva.query("luminance_at_previous_turn_event > 0.11 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
         #all_results["angle_change_at_current_turn_event_if_dark_at_previous_turn_event"].append(df_selected_larva.query("luminance_at_previous_turn_event <= 0.11 and r_at_current_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
@@ -282,8 +282,8 @@ for experiment_name in experiment_names:
         #all_results["angle_change_at_current_turn_event_if_darkening_over_last_1s_before_current_turn_event"].append(df_selected_larva.query("luminance_change_since_previous_turn_event < 0 and time_since_previous_turn_event > 22.5 and r_at_current_turn_event < 5.9 and r_at_previous_turn_event < 5.9")["angle_change_at_current_turn_event"].abs().median())
 
 
-        all_results["time_since_previous_turn_event_at_current_turn_event_if_bright_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event > 0.11*410 and r_at_current_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
-        all_results["time_since_previous_turn_event_at_current_turn_event_if_dark_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event <= 0.11*410 and r_at_current_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
+        all_results["time_since_previous_turn_event_at_current_turn_event_if_bright_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event > 29 and r_at_current_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
+        all_results["time_since_previous_turn_event_at_current_turn_event_if_dark_at_current_turn_event"].append(df_selected_larva.query("luminance_at_current_turn_event <= 29 and r_at_current_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
 
         #all_results["time_since_previous_turn_event_at_current_turn_event_if_bright_at_previous_turn_event"].append(df_selected_larva.query("luminance_at_previous_turn_event >0.11 and r_at_current_turn_event < 5.9 and r_at_previous_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
         #all_results["time_since_previous_turn_event_at_current_turn_event_if_dark_at_previous_turn_event"].append(df_selected_larva.query("luminance_at_previous_turn_event <=0.11 and r_at_current_turn_event < 5.9 and r_at_previous_turn_event < 5.9")["time_since_previous_turn_event"].abs().median())
@@ -331,7 +331,7 @@ for experiment_name in experiment_names:
     histogram_results["density"].extend(density)
 
     ####
-    bins = np.linspace(-80, 80, 60)
+    bins = np.linspace(-120, 120, 60)
     density, _ = np.histogram(df_selected_experiment.query("r_at_current_turn_event < 5.9 and r_at_previous_turn_event < 5.9")["luminance_change_since_previous_turn_event"].values, bins=bins, density=True)
 
     histogram_results["experiment_name"].extend([experiment_name] * (len(bins) - 1))
@@ -340,7 +340,7 @@ for experiment_name in experiment_names:
     histogram_results["density"].extend(density)
 
 
-    bins = np.linspace(-80, 80, 60)
+    bins = np.linspace(-120, 120, 60)
     density, _ = np.histogram(df_selected_experiment.query("r_at_current_turn_event < 5.9 and r_at_previous_turn_event < 5.9")["luminance_change_during_current_turn_event"].values, bins=bins, density=True)
 
     histogram_results["experiment_name"].extend([experiment_name] * (len(bins) - 1))
@@ -358,11 +358,11 @@ df_histogram_results = pd.DataFrame.from_dict(histogram_results)
 df_histogram_results.set_index(["experiment_name", "histogram_type", "bin"], inplace=True)
 df_histogram_results.sort_index(inplace=True)
 
-df_results.to_hdf(root_path / "all_events.h5", key="results_figure2", complevel=9)
-df_histogram_results.to_hdf(root_path / "all_events.h5", key="results_figure2_histograms", complevel=9)
+# df_results.to_hdf(root_path / "all_events.h5", key="results_figure2", complevel=9)
+# df_histogram_results.to_hdf(root_path / "all_events.h5", key="results_figure2_histograms", complevel=9)
 
-#df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2", complevel=9)
-#df_histogram_results.to_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2_histograms", complevel=9)
+df_results.to_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2", complevel=9)
+df_histogram_results.to_hdf(root_path / "all_events_model_profile1.h5", key="results_figure2_histograms", complevel=9)
 
 
 

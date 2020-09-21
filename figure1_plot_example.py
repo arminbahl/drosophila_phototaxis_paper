@@ -55,6 +55,21 @@ c1[np.where(r >= 5.6)] = np.nan
 c2[np.where(r >= 5.6)] = np.nan
 c3[np.where(r >= 5.6)] = np.nan
 
+brightness_measurement = np.array([[0, 41],
+                        [0.1,	50],
+                        [0.2,	103],
+                        [0.3,	213],
+                        [0.4,	463],
+                        [0.5,	833],
+                        [0.6,	1112],
+                        [0.7,	1498],
+                        [0.8,	1892],
+                        [0.9,	2480],
+                        [1,	2874]])
+
+def projector_transformation_function(pixel_brightness):
+    return 2900 * (pixel_brightness/255) ** 2.2 + 41
+
 # for i in range(3):
 #
 #     experiment_name = ["temporal_phototaxis_drosolarva", "virtual_valley_stimulus_control_drosolarva", "virtual_valley_stimulus_drosolarva"][i]
@@ -140,6 +155,15 @@ myfig.Line(p0, x=df_selected_larva.index, y=df_selected_larva["y"], lc='C1', zor
 myfig.Line(p0, x=df_selected_larva.index, y=df_selected_larva["r"], lc='C2', zorder=2, lw=1, alpha=0.9)
 
 #
+
+p0 = myfig.Plot(fig, xpos=15, ypos=15, plot_height=2, plot_width=3, lw=1,
+                xl="Pixel value", xmin=-5, xmax=260, xticks=[0, 50, 100, 150, 200, 250],
+                yl="Measured luminance (Lux)", ymin=-50, ymax=3050, yticks=[0, 1000, 2000, 3000])
+
+myfig.Line(p0, x=brightness_measurement[:, 0] * 255, y=brightness_measurement[:, 1], pc='white', ps=3, pt='o', lc='C0', zorder=2, lw=1, label='Measured')
+myfig.Line(p0, x=brightness_measurement[:, 0] * 255, y=projector_transformation_function(brightness_measurement[:, 0] * 255), pc='white', ps=3, pt='o', lc='C1', zorder=2, lw=1, label='Fitted')
+
+
 fig.savepdf(root_path / f"figure1_example_data", open_pdf=True)
 
 
