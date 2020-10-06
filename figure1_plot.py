@@ -11,17 +11,19 @@ c1 = (1 - pow((1 - np.abs(x)/6), 0.5)) * 255
 c2 = np.ones_like(np.abs(x)) * 128
 c3 = 255*(np.abs(x)-3)**2/9
 
+print(255*(np.abs(5+0.025)-3)**2/9, 255*(np.abs(5-0.025)-3)**2/9)
+sdf
 #def projector_transformation_function(pixel_brightness):
 #    return 2900 * (pixel_brightness/255) ** 2.2 + 41
 
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
 #df1 = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="results_figure1")
-df1 = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1")
-#df1 = pd.read_hdf(root_path / "all_data_model_profile2.h5", key="results_figure1")
+#df1 = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1")
+df1 = pd.read_hdf(root_path / "all_data_model_profile2.h5", key="results_figure1")
 
 #df1.to_excel(root_path / "all_data_figure1.xlsx", sheet_name="results_figure1")
-df1.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_figure1_experiment_mean.xlsx", sheet_name="results_figure1")
+#df1.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_figure1_experiment_mean.xlsx", sheet_name="results_figure1")
 
 #df2 = pd.read_hdf(root_path / "all_data_spatial_phototaxis.h5", key="results_figure1")
 #df2.to_excel(root_path / "all_data__spatial_phototaxis_figure1.xlsx", sheet_name="results_figure1")
@@ -29,8 +31,8 @@ df1.groupby(level=[0, 2, 3]).mean().to_excel(root_path / "all_data_figure1_exper
 
 # We define the phototaxis index as the change in time spent in the dark ring relative to control conditions
 
-fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'virtual_valley_stimulus_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
-#fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'temporal_phototaxis_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
+#fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'virtual_valley_stimulus_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
+fraction_of_time_in_dark_ring_experiment = df1.query("experiment_name == 'temporal_phototaxis_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
 
 fraction_of_time_in_dark_ring_control = df1.query("experiment_name == 'virtual_valley_stimulus_control_drosolarva' and region_bin == 'r2_to_r4' and time_bin == 't15_to_t60'")[f"fraction_of_time_spent"]
 
@@ -44,13 +46,13 @@ fraction_of_time_in_dark_ring_control = df1.query("experiment_name == 'virtual_v
 # phototaxis_index_mean = np.mean(ds)
 # print(phototaxis_index_mean)
 
-for experiment_name in ["virtual_valley_stimulus_drosolarva"]:
+for experiment_name in ["temporal_phototaxis_drosolarva"]:
 
     if experiment_name == "virtual_valley_stimulus_drosolarva":
         color = 'C0'
         df = df1
 
-    elif experiment_name == "virtual_valley_stimulus_control_drosolarva":
+    elif experiment_name == "temporal_phototaxis_drosolarva":
         color = "C1"
         df = df1
     else:
@@ -201,4 +203,4 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva"]:
 
 
 
-    fig.savepdf(root_path / f"figure1_{experiment_name}_model", open_pdf=True)
+    fig.savepdf(root_path / f"figure1_{experiment_name}_model_profile2", open_pdf=True)

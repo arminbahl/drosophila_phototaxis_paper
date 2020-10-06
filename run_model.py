@@ -6,7 +6,7 @@ import numpy as np
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
 
-luminance_profile = 0
+luminance_profile = 1
 
 @jit(nopython=True)
 def luminance_equation_0(x, y):
@@ -265,8 +265,8 @@ df.sort_index(inplace=True)
 
 df.to_hdf(root_path / f"all_data_model_profile{luminance_profile}.h5", key="phototaxis_index_grid_search", complevel=4)
 
-#for experiment_name in ["temporal_phototaxis_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
-for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
+for experiment_name in ["temporal_phototaxis_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
+#for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_stimulus_control_drosolarva"]:
     for larva_i in range(50):
         print(experiment_name, larva_i)
         while True:
@@ -277,8 +277,7 @@ for experiment_name in ["virtual_valley_stimulus_drosolarva", "virtual_valley_st
 
         orientations[0] = np.random.random()*360
 
-        if experiment_name == "virtual_valley_stimulus_drosolarva":
-#        if experiment_name == "temporal_phototaxis_drosolarva":
+        if experiment_name == "virtual_valley_stimulus_drosolarva" or experiment_name == "temporal_phototaxis_drosolarva":
             event_counter = temporal_photo_taxis_model(True, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)
         if experiment_name == "virtual_valley_stimulus_control_drosolarva":
             event_counter = temporal_photo_taxis_model(False, luminance_profile, ts, xs, ys, luminances, orientations, event_indices, False, True, False, True, 1, 1)

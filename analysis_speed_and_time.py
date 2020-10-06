@@ -3,7 +3,8 @@ from pathlib import Path
 import numpy as np
 
 root_path = Path("/Users/arminbahl/Desktop/preprocessed data/maxwell_paper")
-df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="raw_data")
+#df = pd.read_hdf(root_path / "all_data_model_profile1.h5", key="raw_data")
+df = pd.read_hdf(root_path / "all_data_model_profile2.h5", key="raw_data")
 #df = pd.read_hdf(root_path / "all_data_deepposekit.h5", key="raw_data")
 #df = pd.read_hdf(root_path / "all_data_spatial_phototaxis.h5", key="raw_data")
 
@@ -111,6 +112,8 @@ df_results.sort_index(inplace=True)
 print(df_results)
 
 
-df_results.to_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1", complevel=9)
+#df_results.to_hdf(root_path / "all_data_model_profile1.h5", key="results_figure1", complevel=9)
+df_results.to_hdf(root_path / "all_data_model_profile2.h5", key="results_figure1", complevel=9)
+
 #df_results.to_hdf(root_path / "all_data_deepposekit.h5", key="results_figure1", complevel=9)
 #df_results.to_hdf(root_path / "all_data_spatial_phototaxis.h5", key="results_figure1", complevel=9)
